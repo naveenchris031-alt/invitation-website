@@ -1,0 +1,251 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Our Special Day</title>
+
+  <meta name="description" content="You are warmly invited to our special day.">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 24px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f4eee6;
+      color: #3f3027;
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    .invitation {
+      width: 100%;
+      max-width: 520px;
+      padding: 24px;
+      text-align: center;
+      background: #fffaf4;
+      border: 1px solid #e5d8c8;
+      border-radius: 8px;
+      box-shadow: 0 12px 35px rgba(63, 48, 39, 0.12);
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      font-family: Arial, sans-serif;
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: #9a795b;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(30px, 7vw, 43px);
+      font-weight: normal;
+      line-height: 1.15;
+    }
+
+    .intro {
+      max-width: 360px;
+      margin: 0 auto 22px;
+      font-size: 15px;
+      line-height: 1.7;
+      color: #786456;
+    }
+
+    .video-container {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+      background: #e9dfd3;
+      border-radius: 4px;
+    }
+
+    video {
+      display: block;
+      width: 100%;
+      height: auto;
+      min-height: 180px;
+      max-height: 75vh;
+      object-fit: contain;
+      background: #e9dfd3;
+    }
+
+    .play-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(30, 22, 17, 0.18);
+      cursor: pointer;
+      border: 0;
+      padding: 20px;
+    }
+
+    .play-overlay[hidden] {
+      display: none;
+    }
+
+    .play-button {
+      width: 76px;
+      height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-left: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      border-radius: 50%;
+      background: rgba(255, 250, 244, 0.94);
+      color: #49362a;
+      font-family: Arial, sans-serif;
+      font-size: 30px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.15);
+    }
+
+    .play-overlay:focus-visible {
+      outline: 3px solid #9a795b;
+      outline-offset: -5px;
+    }
+
+    .footer {
+      margin: 22px 0 0;
+      font-size: 13px;
+      color: #8a7464;
+      line-height: 1.6;
+    }
+
+    .error {
+      display: none;
+      margin-top: 14px;
+      color: #a33c32;
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .error.visible {
+      display: block;
+    }
+
+    @media (max-width: 400px) {
+      .invitation {
+        padding: 18px;
+      }
+
+      .eyebrow {
+        letter-spacing: 2.5px;
+      }
+
+      .play-button {
+        width: 62px;
+        height: 62px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="invitation">
+
+    <p class="eyebrow">You are warmly invited</p>
+
+    <h1>Our Special Day</h1>
+
+    <p class="intro">
+      A little film, a special moment,<br>
+      and a celebration we'd love to share with you.
+    </p>
+
+    <div class="video-container">
+
+      <video
+        id="invitationVideo"
+        controls
+        playsinline
+        loop
+        preload="metadata"
+        poster="./cover.jpg"
+      >
+        <source src="./invitation.mp4" type="video/mp4">
+        Your browser does not support this video.
+      </video>
+
+      <button
+        type="button"
+        id="playOverlay"
+        class="play-overlay"
+        aria-label="Play invitation video"
+      >
+        <span class="play-button" aria-hidden="true">▶</span>
+      </button>
+
+    </div>
+
+    <p id="errorMessage" class="error" role="status">
+      The video could not be loaded. Please check the video filename
+      and try opening the MP4 file separately.
+    </p>
+
+    <p class="footer">
+      Made with love. Shared with joy.
+    </p>
+
+  </main>
+
+  <script>
+    const video = document.getElementById("invitationVideo");
+    const playOverlay = document.getElementById("playOverlay");
+    const errorMessage = document.getElementById("errorMessage");
+
+    function hidePlayOverlay() {
+      playOverlay.hidden = true;
+    }
+
+    function showPlayOverlay() {
+      playOverlay.hidden = false;
+    }
+
+    playOverlay.addEventListener("click", async function () {
+      errorMessage.classList.remove("visible");
+
+      try {
+        await video.play();
+      } catch (error) {
+        errorMessage.textContent =
+          "The video could not start. Check that invitation.mp4 exists " +
+          "and plays correctly on your computer.";
+        errorMessage.classList.add("visible");
+      }
+    });
+
+    video.addEventListener("play", hidePlayOverlay);
+
+    video.addEventListener("pause", function () {
+      if (!video.ended) {
+        showPlayOverlay();
+      }
+    });
+
+    video.addEventListener("error", function () {
+      errorMessage.textContent =
+        "The video could not be loaded. Check the filename and MP4 format.";
+      errorMessage.classList.add("visible");
+    });
+
+    video.addEventListener("loadeddata", function () {
+      errorMessage.classList.remove("visible");
+    });
+  </script>
+
+</body>
+</html>
